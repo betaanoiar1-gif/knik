@@ -1,0 +1,29 @@
+[project]
+name = "nexus"
+version = "1.0.0"
+description = "Unified control plane for Free Claude Code, OpenCode, and Skills"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "AGPL-3.0-only"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn>=0.32",
+  "httpx>=0.28",
+  "pydantic>=2.10",
+  "python-multipart>=0.0.12",
+]
+
+[project.scripts]
+nexus = "nexus.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["nexus*"]
