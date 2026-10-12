@@ -137,6 +137,17 @@ No KiosAPI key was present in the environment, in `secrets.json`, or in accessib
 
 A probe with a fake key, not printed here, showed: `secrets.json` mode `0600` and outside the repository; the OpenCode config file contains `{env:NEXUS_KIOSAPI_API_KEY}` and not the key; the OpenCode process environment receives the key because `packages/core/src/config/variable.ts` resolves `{env:VAR}` from `process.env`. Shell tools inherit that environment. The design was inspected and not changed. A project path that contains `secrets.json` is rejected. `git ls-files` does not track `secrets.json`.
 
+## Confirmation rerun
+
+On the same date, after the report above was published, the environment was checked again without rebuilding Python, Bun, or the engines.
+
+- Branch `arena/551b61d2-knik` matched the remote at `e73f3c3ae2bb7616f2cc035b4f1aca47dcb6029e`. Pins were unchanged: Free Claude Code `4e99ddaa5cf453d4ef22fae7c17f7f3aacc3c52b`, OpenCode `80fb31ebb7e8dfa5c26fc51ca81da8e06b618a52`, Skills `49dd158d1076134a641b33efb035946536778336`.
+- `third_party/free-claude-code/.venv/bin/python` was Python 3.14.7. `uv run --locked pytest -q --tb=line -o thread_dump_timeout=15` reported `9045 passed, 17 skipped` in 149.51s, exit 0.
+- NEXUS `pytest -q tests` reported 15 passed.
+- NEXUS was still listening on `0.0.0.0:8787`. `POST` start was not repeated. The already running Free Claude Code process answered `/health` with `{"status":"healthy"}`. The already running OpenCode process answered `/api/info` with version `2.0.27`.
+- `secrets.json` was still outside the repository, mode `0600`, and not tracked. It had no KiosAPI key. GitHub Actions secret names were not readable (HTTP 403). No live provider call was made.
+- The Electron 44.4.5 zip still cannot be fetched. `objects.githubusercontent.com` does not connect, and `release-assets.githubusercontent.com` fails during TLS. The desktop tests were not rerun.
+
 ## Not verified
 
 - A real HTTP call to `https://mp.kaggle.net` with model `kiosapi/north-mini-code`. No credential was available.

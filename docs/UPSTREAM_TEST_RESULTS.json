@@ -60,6 +60,32 @@
         "status": "not_run",
         "reason": "No KiosAPI credential in the environment, secrets store, or accessible GitHub Actions secrets."
       }
+    },
+    "confirmation_rerun_2026_10_12": {
+      "free_claude_code_pytest": {
+        "status": "passed",
+        "python": "3.14.7",
+        "command": "uv run --locked pytest -q --tb=line -o thread_dump_timeout=15",
+        "result": "9045 passed, 17 skipped in 149.51s",
+        "exit_code": 0
+      },
+      "nexus_pytest": {
+        "status": "passed",
+        "result": "15 passed"
+      },
+      "engines": {
+        "nexus": "listening on 0.0.0.0:8787",
+        "free_claude_code_health": "healthy",
+        "opencode_version": "2.0.27"
+      },
+      "kiosapi_live": {
+        "status": "not_run",
+        "reason": "No KiosAPI credential in the environment, secrets store, or accessible GitHub Actions secrets."
+      },
+      "desktop_electron": {
+        "status": "not_rerun",
+        "reason": "Electron 44.4.5 binary hosts objects.githubusercontent.com and release-assets.githubusercontent.com are unreachable."
+      }
     }
   }
 }
