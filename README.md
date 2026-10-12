@@ -71,7 +71,7 @@ Neither runtime is downloaded automatically by `pip install -e .`.
 .venv/bin/python scripts/record_upstream_checks.py
 ```
 
-`docs/TEST_REPORT.md` records what was actually executed. Upstream pytest for Free Claude Code and the OpenCode bun suite were not run here; the reasons are in that report. NEXUS tests passing does not mean those upstream suites passed.
+`docs/TEST_REPORT.md` records what was actually executed. Free Claude Code pytest passed on Python 3.14.7. OpenCode's turbo unit graph was run with Bun 1.4.2; two desktop tests still fail here because the Electron binary cannot be downloaded. NEXUS tests passing is a separate result from those upstream suites.
 
 ## Layout
 

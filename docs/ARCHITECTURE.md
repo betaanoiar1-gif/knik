@@ -48,6 +48,6 @@ Starting one engine is a separate call. An exception is caught, stored on that e
 ## What is not claimed
 
 - KiosAPI at `https://mp.kaggle.net` was not called.
-- Free Claude Code's pytest suite was not executed (Python 3.14.7 is not installed).
-- OpenCode's bun test suite was not executed (`bun` and workspace `node_modules` are absent).
+- Free Claude Code pytest on Python 3.14.7 passed: 9045 passed, 17 skipped. Playwright e2e and smoke were not run.
+- OpenCode's turbo unit graph was executed with Bun 1.4.2. Desktop Electron download failed in this environment. See `docs/TEST_REPORT.md`.
 - A button is not proof that an engine binary is installed. The engine status says `runtime_ready: false` until the interpreter or binary is actually found.

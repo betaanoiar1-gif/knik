@@ -39,6 +39,27 @@
     "opencode_binary": {
       "status": "not_installed",
       "reason": "No opencode binary on PATH. NEXUS can still launch one if NEXUS_OPENCODE_BIN is set."
+    },
+    "verification_run_2026_10_12": {
+      "free_claude_code_pytest": {
+        "status": "passed",
+        "python": "3.14.7",
+        "command": "uv run --locked pytest -v --tb=short -o thread_dump_timeout=15 --durations=50",
+        "result": "9045 passed, 17 skipped",
+        "exit_code": 0
+      },
+      "opencode_turbo_test": {
+        "status": "failed",
+        "bun": "1.4.2",
+        "command": "GITHUB_ACTIONS=false bun turbo test --concurrency=1 --continue=dependencies-successful",
+        "failed_tasks": ["@opencode/desktop#test", "@opencode/core#test"],
+        "core_retest_after_bun_on_login_path": "35 passed, 0 failed",
+        "desktop_reason": "Electron binary download failed TLS certificate verification"
+      },
+      "kiosapi_live": {
+        "status": "not_run",
+        "reason": "No KiosAPI credential in the environment, secrets store, or accessible GitHub Actions secrets."
+      }
     }
   }
 }

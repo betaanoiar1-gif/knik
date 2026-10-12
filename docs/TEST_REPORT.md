@@ -1,6 +1,6 @@
 # Test report
 
-Date: 2026-10-12. Environment: Python 3.11.2, Node v22.22.3, no Bun, no Python 3.14.7, no KiosAPI credential.
+Date: 2026-10-12. Control plane: Python 3.11.2. Free Claude Code tests: Python 3.14.7 built from the CPython tag. OpenCode tests: Bun 1.4.2. Node v22.22.3. No KiosAPI credential.
 
 This report lists commands that were run. A skipped upstream suite is not a pass.
 
@@ -41,9 +41,9 @@ The FCC and OpenCode adapter tests launch a local stand-in interpreter or binary
 | --- | --- |
 | `third_party/skills/scripts/list-skills.sh` | passed, 38 `SKILL.md` paths |
 | `node scripts/sync-plugin-version.mjs --check` | passed, `plugin.json` version 1.3.1 |
-| Free Claude Code `pytest` | skipped. Upstream `requires-python == 3.14.7`. This machine has 3.11.2. Tests remain in `third_party/free-claude-code/tests`. |
-| OpenCode `bun test` | skipped. `bun` is not installed and the workspace `node_modules` were not installed. Tests remain in the submodule. |
-| `opencode` on the default `PATH` | not installed at the time of that script |
+| Free Claude Code `pytest` | passed later on Python 3.14.7. See below. The first record in `docs/UPSTREAM_TEST_RESULTS.json` is the earlier skip. |
+| OpenCode `bun turbo test` | executed later with Bun 1.4.2. See below. |
+| `opencode` | `@opencode/cli@2.0.27` installed and started from NEXUS |
 
 ## Live OpenCode binary
 
@@ -85,10 +85,62 @@ No KiosAPI request was sent during this probe. The published binary was not left
 - A mock task inside the allowed workspace finished `succeeded` with a stdout event. This is the test double, not Free Claude Code or OpenCode.
 - `POST /api/kiosapi/probe` with `dry_run: true` returned the Anthropic-shaped URL and model and `verified: false`. No provider request was sent. No API key was present, so none was printed.
 
+## Free Claude Code original tests
+
+Python 3.14.7 was built from `https://github.com/python/cpython` tag `v3.14.7` because the GitHub release CDN was not reachable. `uv sync --locked` installed the locked dependencies, including the development group, into `third_party/free-claude-code/.venv`. The package version was pretended as `0.0.0` because the snapshot has no `.git` metadata for hatch-vcs. The tests still imported the vendored source.
+
+Command, matching `.github/workflows/tests.yml`:
+
+```text
+uv run --locked pytest -v --tb=short -o thread_dump_timeout=15 --durations=50
+```
+
+Result: `9045 passed, 17 skipped` in 153.21s. Exit code 0. This is the upstream `tests/` suite. The Playwright e2e job and the smoke suite were not run.
+
+## OpenCode original tests
+
+Bun 1.4.2 came from the npm package `@oven/bun-linux-x64@1.4.2`. The GitHub release zip redirects to a host this environment cannot reach. `bun install --frozen-lockfile` installed 2161 packages and failed to download two: `@solidjs/start` from `pkg.pr.new`, and `ghostty-web` from the GitHub API. `ghostty-web` was fetched from `codeload.github.com` at the locked commit and the upstream patch was applied. `@solidjs/start` is used by console, enterprise, and stats apps, which are not in the unit-test task graph.
+
+`bun run test:effect-simplification-rules`: 10 passed. `bun run lint:effect-simplifications`: exit 0.
+
+The CI command `GITHUB_ACTIONS=false bun turbo test` stopped at the first failure. A second run used `--concurrency=1 --continue=dependencies-successful` so the rest of that same task graph could finish. Results:
+
+| Task | Result |
+| --- | --- |
+| `@opencode/codemode#test` | 1398 passed |
+| `@opencode/httpapi-codegen#test` | 98 passed |
+| `@opencode/function#test` | 5 passed |
+| `@opencode/ui#test` | 152 passed |
+| `@opencode/session-ui#test` | 249 passed |
+| `@opencode/app#test` | 749 passed, then 168 passed |
+| `@opencode/latex#test` | 123 passed |
+| `@opencode/tui#test` | 1463 passed, 2 skipped |
+| `@opencode/ai#test` | 1793 passed, 28 skipped |
+| `@opencode/server#test` | 82 passed, 1 skipped |
+| `@opencode/cli#test` | 326 passed, 9 skipped |
+| `@opencode/core#test` | 6281 passed, 365 skipped, 2 failed, then the two failures were retested |
+| `@opencode/desktop#test` | 113 passed, 1 skipped, 2 failed |
+
+The two core failures were `bash -lc bun` exiting 127 because a login shell did not see Bun. After linking Bun into `/usr/local/bin`, `bun run script/test.ts test/worktree.test.ts` reported 35 passed, 0 failed. No OpenCode source file was changed.
+
+The two desktop failures are `unable to verify the first certificate` while `@electron/get` downloads the Electron 44.4.5 binary. The npm package does not contain that binary, and the release host is not reachable from here. Those two tests were not rerun successfully.
+
+Package scripts outside the turbo `test` graph were also run directly. `plugin` 9 passed, `util` 180 passed, `http-recorder` 53 passed, `plugin-browser` 44 passed, `simulation` 47 passed, `theme` 2 passed. `gui-extensions` failed once with a missing `ghostty-web` link, then passed 177 with 1 skipped after the link was added. `client` had 220 passed and 4 failed. `sdk` had 35 passed and 4 failed. `merman` had 504 passed and 1 failed. Those three were not part of the CI `turbo test` graph and were not patched.
+
+## Real engine start from NEXUS
+
+`nexus serve --host 0.0.0.0 --port 8787` was running. `POST /api/engines/free-claude-code/start` launched `/.../.venv/bin/python -c "from free_claude_code.cli.entrypoints import serve; serve()"` on Python 3.14.7. `GET` of that process's `/health` returned `{"status":"healthy"}`. `POST /api/engines/opencode/start` launched `opencode serve --hostname 127.0.0.1`. `GET /api/info` returned version `2.0.27`. The processes were then stopped. This is not a KiosAPI completion.
+
+## Secrets
+
+No KiosAPI key was present in the environment, in `secrets.json`, or in accessible GitHub Actions secrets. A live call to `https://mp.kaggle.net` was not made.
+
+A probe with a fake key, not printed here, showed: `secrets.json` mode `0600` and outside the repository; the OpenCode config file contains `{env:NEXUS_KIOSAPI_API_KEY}` and not the key; the OpenCode process environment receives the key because `packages/core/src/config/variable.ts` resolves `{env:VAR}` from `process.env`. Shell tools inherit that environment. The design was inspected and not changed. A project path that contains `secrets.json` is rejected. `git ls-files` does not track `secrets.json`.
+
 ## Not verified
 
-- A real HTTP call to `https://mp.kaggle.net` with model `kiosapi/north-mini-code`.
-- Free Claude Code process startup on Python 3.14.7.
-- Free Claude Code's pytest, smoke, and e2e suites.
-- OpenCode's bun unit tests, typecheck, and a prompt that reaches KiosAPI.
+- A real HTTP call to `https://mp.kaggle.net` with model `kiosapi/north-mini-code`. No credential was available.
+- Free Claude Code Playwright e2e and smoke jobs.
+- OpenCode desktop tests that need the Electron binary.
+- A prompt that reaches KiosAPI through either engine.
 - Claude Code CLI harness launch (`fcc-claude`). The launcher source is present; the `claude` binary was not installed.
