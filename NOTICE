@@ -1,0 +1,38 @@
+NEXUS
+Copyright (c) 2026 NEXUS contributors
+SPDX-License-Identifier: AGPL-3.0-only
+
+This repository is a combined work. The NEXUS control plane is licensed under
+the GNU Affero General Public License v3.0 only (see LICENSE). That choice is
+deliberate: NEXUS vendors and serves Free Claude Code, which is AGPL-3.0-only,
+over a network interface.
+
+Third-party components keep their own notices and are not relicensed:
+
+- third_party/free-claude-code
+  Free Claude Code
+  Copyright (c) 2026 Ali Khokhar
+  SPDX-License-Identifier: AGPL-3.0-only
+  Unmodified source snapshot. See third_party/UPSTREAM.json.
+
+- third_party/opencode
+  OpenCode
+  Copyright (c) 2025 opencode
+  SPDX-License-Identifier: MIT
+  Git submodule of https://github.com/anomalyco/opencode
+  License text: third_party/opencode/LICENSE
+
+- third_party/skills
+  Skills for Real Engineers
+  Copyright (c) 2026 Matt Pocock
+  SPDX-License-Identifier: MIT
+  Unmodified source snapshot. License text: third_party/skills/LICENSE
+
+MIT components may be used under the MIT license when taken alone. When they
+are distributed together with NEXUS and Free Claude Code as this network
+service, the corresponding source of the combined service is this repository
+(including the OpenCode submodule URL and pinned commit).
+
+NEXUS is an independent project. It is not affiliated with or endorsed by
+Anthropic, Anomaly, Matt Pocock, Kaggle, or the KiosAPI operators.
+Claude and Claude Code are trademarks of Anthropic.
