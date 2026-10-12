@@ -1,0 +1,32 @@
+# NEXUS runtime state and secrets — never commit
+.nexus-data/
+.nexus-runtime/
+*.secret
+secrets.json
+auth.json
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Node / engine build artifacts (upstream checkouts keep their own ignores)
+node_modules/
+
+# OS / editor
+.DS_Store
+.ipynb_checkpoints/
+*.log
+
+.coverage
+htmlcov/

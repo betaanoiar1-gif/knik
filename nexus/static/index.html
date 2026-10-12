@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="nexus-ui-token" content="{{UI_TOKEN}}">
+  <meta name="nexus-token-injected" content="{{INJECTED}}">
+  <title>NEXUS</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div id="login" class="login hidden">
+    <form data-action="login" class="login-card">
+      <p class="mark">NEXUS</p>
+      <h1 data-i18n="loginTitle">رمز لوحة التحكم</h1>
+      <p data-i18n="loginHelp">هذا الرمز يحمي لوحة التحكم. ليس مفتاح KiosAPI.</p>
+      <input id="login-token" type="password" autocomplete="current-password" required>
+      <button type="submit" data-i18n="loginButton">دخول</button>
+      <p id="login-error" class="error"></p>
+    </form>
+  </div>
+
+  <header class="top">
+    <div class="brand">
+      <span class="mark">NX</span>
+      <div>
+        <strong>NEXUS</strong>
+        <small>{{VERSION}}</small>
+      </div>
+    </div>
+    <nav>
+      <button type="button" data-action="show" data-panel="overview" data-i18n="navOverview">نظرة عامة</button>
+      <button type="button" data-action="show" data-panel="engines" data-i18n="navEngines">المحركات</button>
+      <button type="button" data-action="show" data-panel="kios" data-i18n="navKios">KiosAPI</button>
+      <button type="button" data-action="show" data-panel="skills" data-i18n="navSkills">المهارات</button>
+      <button type="button" data-action="show" data-panel="tasks" data-i18n="navTasks">المهام</button>
+      <button type="button" data-action="show" data-panel="sessions" data-i18n="navSessions">الجلسات</button>
+      <button type="button" data-action="show" data-panel="diagnostics" data-i18n="navDiagnostics">التشخيص</button>
+    </nav>
+    <button type="button" id="lang" data-action="set-language">English</button>
+  </header>
+
+  <main>
+    <section id="overview" class="panel">
+      <h2 data-i18n="overviewTitle">لوحة التشغيل</h2>
+      <p class="lede" data-i18n="overviewLede">المحركات الأصلية تبقى عمليات مستقلة. فشل أحدهما لا يوقف الآخر.</p>
+      <div id="engine-cards" class="cards"></div>
+      <div class="split">
+        <article>
+          <h3 data-i18n="activeTask">المهمة الحالية</h3>
+          <pre id="active-task" class="log">—</pre>
+        </article>
+        <article>
+          <h3 data-i18n="kiosSummary">KiosAPI</h3>
+          <dl id="kios-summary"></dl>
+        </article>
+      </div>
+    </section>
+
+    <section id="engines" class="panel hidden">
+      <div class="row">
+        <h2 data-i18n="navEngines">المحركات</h2>
+        <button type="button" data-action="refresh-engines" data-i18n="refresh">تحديث</button>
+      </div>
+      <div id="engine-admin"></div>
+    </section>
+
+    <section id="kios" class="panel hidden">
+      <h2>KiosAPI</h2>
+      <form id="settings-form" data-action="save-settings" class="grid">
+        <label>Host <input name="kios_host" required></label>
+        <label>Model <input name="kios_model" required></label>
+        <label>Wire
+          <select name="kios_wire_format">
+            <option value="anthropic_messages">anthropic_messages</option>
+            <option value="openai_chat">openai_chat</option>
+          </select>
+        </label>
+        <label>Auth
+          <select name="kios_auth_style">
+            <option value="auto">auto</option>
+            <option value="x-api-key">x-api-key</option>
+            <option value="bearer">bearer</option>
+          </select>
+        </label>
+        <label>anthropic-version <input name="kios_anthropic_version"></label>
+        <label>RPM <input name="kios_rpm" type="number" min="1" max="600"></label>
+        <label data-i18n-label="retries">Retries <input name="kios_max_retries" type="number" min="0" max="8"></label>
+        <label>Timeout <input name="kios_timeout_seconds" type="number" min="2" max="600"></label>
+        <label>Context <input name="kios_context_tokens" type="number" min="1024"></label>
+        <label>Max output <input name="kios_max_output_tokens" type="number" min="1"></label>
+        <label data-i18n-label="messaging">FCC messaging
+          <select name="fcc_messaging_platform">
+            <option value="none">none</option>
+            <option value="telegram">telegram</option>
+            <option value="discord">discord</option>
+          </select>
+        </label>
+        <label class="wide">Allowed roots <textarea name="allowed_roots" rows="3"></textarea></label>
+        <div class="actions">
+          <button type="submit" data-i18n="saveSettings">حفظ الإعدادات</button>
+        </div>
+      </form>
+      <form data-action="save-secret" class="secret-row">
+        <label>API key <input id="api-key" type="password" autocomplete="off"></label>
+        <button type="submit" data-i18n="saveKey">حفظ المفتاح</button>
+        <button type="button" data-action="clear-secret" data-i18n="clearKey">مسح المفتاح</button>
+        <span id="key-state"></span>
+      </form>
+      <div class="actions">
+        <button type="button" data-action="probe-dry" data-i18n="probeDry">فحص صياغة الطلب</button>
+        <button type="button" data-action="probe-live" data-i18n="probeLive">فحص اتصال حقيقي</button>
+      </div>
+      <pre id="kios-output" class="log"></pre>
+    </section>
+
+    <section id="skills" class="panel hidden">
+      <div class="row">
+        <h2 data-i18n="navSkills">المهارات</h2>
+        <button type="button" data-action="refresh-skills" data-i18n="refresh">تحديث</button>
+      </div>
+      <p class="lede" data-i18n="skillsLede">الملفات الأصلية لا تُعدَّل. التثبيت رابط رمزي إلى مجلد الاكتشاف الخاص بالمحرك.</p>
+      <div id="skill-list" class="skill-list"></div>
+    </section>
+
+    <section id="tasks" class="panel hidden">
+      <h2 data-i18n="navTasks">المهام</h2>
+      <form data-action="submit-task" class="grid">
+        <label>Engine
+          <select id="task-engine" name="engine_id"></select>
+        </label>
+        <label class="wide">Project <input id="project-path" name="project" required placeholder="/absolute/path"></label>
+        <label class="wide">Prompt <textarea id="task-prompt" name="prompt" rows="5" required></textarea></label>
+        <label class="wide">Skills <select id="task-skills" multiple size="6"></select></label>
+        <div class="actions">
+          <button type="button" data-action="validate-project" data-i18n="validateProject">تحقق من المسار</button>
+          <button type="submit" data-i18n="runTask">تشغيل المهمة</button>
+          <button type="button" data-action="cancel-task" data-i18n="cancelTask">إلغاء المهمة</button>
+        </div>
+      </form>
+      <p id="task-meta"></p>
+      <pre id="task-log" class="log"></pre>
+    </section>
+
+    <section id="sessions" class="panel hidden">
+      <div class="row">
+        <h2 data-i18n="navSessions">الجلسات</h2>
+        <button type="button" data-action="refresh-sessions" data-i18n="refresh">تحديث</button>
+      </div>
+      <div id="session-list"></div>
+    </section>
+
+    <section id="diagnostics" class="panel hidden">
+      <div class="row">
+        <h2 data-i18n="navDiagnostics">التشخيص</h2>
+        <button type="button" data-action="refresh-diagnostics" data-i18n="refresh">تحديث</button>
+      </div>
+      <pre id="diagnostics" class="log"></pre>
+    </section>
+  </main>
+  <footer>
+    <span data-i18n="footer">NEXUS لا يعيد كتابة Free Claude Code أو OpenCode أو Skills. الاتصال الحقيقي بـ KiosAPI لا يُعلَن ناجحًا إلا بعد طلب تم تنفيذه.</span>
+  </footer>
+  <script src="/static/app.js"></script>
+</body>
+</html>

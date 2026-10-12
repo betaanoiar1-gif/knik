@@ -1,0 +1,21 @@
+{
+  "package": "@opencode/cli@2.0.27",
+  "version_output": "opencode v2.0.27",
+  "serve": "opencode serve --hostname 127.0.0.1 --port 4097",
+  "info": {
+    "version": "2.0.27",
+    "urls": ["http://127.0.0.1:4097"],
+    "paths": {"tmp": "/tmp/opencode"},
+    "capabilities": {"persistentPty": true}
+  },
+  "session_create": "POST /api/session returned data.id",
+  "prompt_text": "POST /api/session/:id/prompt {text: say pong} returned HTTP 200",
+  "interrupt": "POST /api/session/:id/interrupt returned {interrupted: true}",
+  "skill_symlink": {
+    "path": ".opencode/skills/tdd -> third_party/skills/skills/engineering/tdd",
+    "prompt_embedded_original_text": true,
+    "list_endpoint_returned_empty": true,
+    "original_skill_file_edited": false
+  },
+  "kiosapi_called": false
+}

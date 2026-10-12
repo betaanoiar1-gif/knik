@@ -1,0 +1,91 @@
+{
+  "python": "3.11.2",
+  "node": "/usr/local/bin/node",
+  "npm": "/usr/local/bin/npm",
+  "bun": null,
+  "opencode": null,
+  "checks": {
+    "skills_list": {
+      "status": "passed",
+      "argv": [
+        "bash",
+        "scripts/list-skills.sh"
+      ],
+      "returncode": 0,
+      "stdout": "skills/engineering/ask-matt/SKILL.md\nskills/engineering/code-review/SKILL.md\nskills/engineering/codebase-design/SKILL.md\nskills/engineering/diagnosing-bugs/SKILL.md\nskills/engineering/domain-modeling/SKILL.md\nskills/engineering/grill-with-docs/SKILL.md\nskills/engineering/implement-spec/SKILL.md\nskills/engineering/implement/SKILL.md\nskills/engineering/improve-codebase-architecture/SKILL.md\nskills/engineering/pr/SKILL.md\nskills/engineering/prototype/SKILL.md\nskills/engineering/research/SKILL.md\nskills/engineering/retro/SKILL.md\nskills/engineering/setup-matt-pocock-skills/SKILL.md\nskills/engineering/tdd/SKILL.md\nskills/engineering/to-spec/SKILL.md\nskills/engineering/to-tickets/SKILL.md\nskills/engineering/triage/SKILL.md\nskills/engineering/wayfinder/SKILL.md\nskills/engineering/wizard/SKILL.md\nskills/in-progress/chief-of-staff/SKILL.md\nskills/in-progress/claude-handoff/SKILL.md\nskills/in-progress/loop-me/SKILL.md\nskills/in-progress/setup-ts-deep-modules/SKILL.md\nskills/in-progress/writing-beats/SKILL.md\nskills/in-progress/writing-fragments/SKILL.md\nskills/in-progress/writing-shape/SKILL.md\nskills/misc/git-guardrails-claude-code/SKILL.md\nskills/misc/migrate-to-shoehorn/SKILL.md\nskills/misc/scaffold-exercises/SKILL.md\nskills/misc/setup-pre-commit/SKILL.md\nskills/productivity/grill-me/SKILL.md\nskills/productivity/grilling/SKILL.md\nskills/productivity/handoff/SKILL.md\nskills/productivity/teach/SKILL.md\nskills/productivity/to-questionnaire/SKILL.md\nskills/productivity/wait-what/SKILL.md\nskills/productivity/writing-for-agents/SKILL.md\n",
+      "stderr": ""
+    },
+    "skills_plugin_version": {
+      "status": "passed",
+      "argv": [
+        "node",
+        "scripts/sync-plugin-version.mjs",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "plugin.json version is 1.3.1 (already in sync)\n",
+      "stderr": ""
+    },
+    "free_claude_code_pytest": {
+      "status": "skipped",
+      "reason": "Upstream requires Python ==3.14.7 and uv. This environment has Python 3.11.2 and no python3.14 binary. The vendored tests were not deleted; they were not executed.",
+      "test_path_present": true
+    },
+    "opencode_package_tests": {
+      "status": "skipped",
+      "reason": "OpenCode's workspace tests are invoked with bun (packages/cli/package.json script `bun test`). bun is not installed and the monorepo node_modules are not installed. The submodule tests were not deleted and were not executed.",
+      "cli_test_script": "bun test --timeout 30000 --only-failures"
+    },
+    "opencode_binary": {
+      "status": "not_installed",
+      "reason": "No opencode binary on PATH. NEXUS can still launch one if NEXUS_OPENCODE_BIN is set."
+    },
+    "verification_run_2026_10_12": {
+      "free_claude_code_pytest": {
+        "status": "passed",
+        "python": "3.14.7",
+        "command": "uv run --locked pytest -v --tb=short -o thread_dump_timeout=15 --durations=50",
+        "result": "9045 passed, 17 skipped",
+        "exit_code": 0
+      },
+      "opencode_turbo_test": {
+        "status": "failed",
+        "bun": "1.4.2",
+        "command": "GITHUB_ACTIONS=false bun turbo test --concurrency=1 --continue=dependencies-successful",
+        "failed_tasks": ["@opencode/desktop#test", "@opencode/core#test"],
+        "core_retest_after_bun_on_login_path": "35 passed, 0 failed",
+        "desktop_reason": "Electron binary download failed TLS certificate verification"
+      },
+      "kiosapi_live": {
+        "status": "not_run",
+        "reason": "No KiosAPI credential in the environment, secrets store, or accessible GitHub Actions secrets."
+      }
+    },
+    "confirmation_rerun_2026_10_12": {
+      "free_claude_code_pytest": {
+        "status": "passed",
+        "python": "3.14.7",
+        "command": "uv run --locked pytest -q --tb=line -o thread_dump_timeout=15",
+        "result": "9045 passed, 17 skipped in 149.51s",
+        "exit_code": 0
+      },
+      "nexus_pytest": {
+        "status": "passed",
+        "result": "15 passed"
+      },
+      "engines": {
+        "nexus": "listening on 0.0.0.0:8787",
+        "free_claude_code_health": "healthy",
+        "opencode_version": "2.0.27"
+      },
+      "kiosapi_live": {
+        "status": "not_run",
+        "reason": "No KiosAPI credential in the environment, secrets store, or accessible GitHub Actions secrets."
+      },
+      "desktop_electron": {
+        "status": "not_rerun",
+        "reason": "Electron 44.4.5 binary hosts objects.githubusercontent.com and release-assets.githubusercontent.com are unreachable."
+      }
+    }
+  }
+}
